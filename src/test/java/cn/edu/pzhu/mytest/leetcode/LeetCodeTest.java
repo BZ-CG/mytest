@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
@@ -35,11 +36,348 @@ import java.util.stream.Stream;
 public class LeetCodeTest {
 
     @Test
+    public void testSwapPairs3() {
+        ListNode node = buildListNode(new int[] { 1, 2, 3, 4 });
+        ListNode head = swapPairs3(node);
+        System.out.println(head);
+    }
+
+    public ListNode swapPairs3(ListNode head) {
+        if (head == null) {
+            return null;
+        }
+
+        int index = 0;
+        ListNode[] arr = new ListNode[101];
+        while (head != null) {
+            arr[index++] = head;
+            head = head.next;
+        }
+
+        for (int i = 0, j = i + 1; j < index; i = i + 2, j = j + 2) {
+            ListNode temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+        }
+
+        for (int i = 1; i < index; i++) {
+            arr[i - 1].next = arr[i];
+        }
+
+        arr[index - 1].next = null;
+        return arr[0];
+    }
+
+    public ListNode removeNthFromEnd3(ListNode head, int n) {
+        ListNode slow = head;
+        ListNode fast = head;
+
+        int length = 0;
+        int count = n + 1;
+        while (fast != null) {
+            if (count <= 0) {
+                slow = slow.next;
+            }
+            fast = fast.next;
+            count--;
+            length++;
+
+        }
+
+        if (length == n) {
+            return head.next;
+        }
+
+        slow.next = slow.next.next;
+        return head;
+    }
+
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        ListNode head = new ListNode();
+        ListNode pre = head;
+
+        int round = 0;
+        while (l1 != null && l2 != null) {
+            int value = l1.val + l2.val + round;
+            round = value / 10;
+
+            pre.next = new ListNode(value % 10);
+            pre = pre.next;
+
+            l1 = l1.next;
+            l2 = l2.next;
+        }
+
+        while (l1 != null) {
+            int value = l1.val + round;
+            round = value / 10;
+
+            pre.next = new ListNode(value % 10);
+            pre = pre.next;
+            l1 = l1.next;
+        }
+
+        while (l2 != null) {
+            int value = l2.val + round;
+            round = value / 10;
+
+            pre.next = new ListNode(value % 10);
+            pre = pre.next;
+            l2 = l2.next;
+        }
+
+        if (round != 0) {
+            pre.next = new ListNode(round);
+        }
+
+        return head.next;
+    }
+
+    public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
+        if (list1 == null) {
+            return list2;
+        } else if (list2 == null) {
+            return list1;
+        } else if (list1.val < list2.val) {
+            list1.next = mergeTwoLists(list1.next, list2);
+            return list1;
+        } else {
+            list2.next = mergeTwoLists(list1, list2.next);
+            return list2;
+        }
+    }
+
+    private void insertInLast(ListNode head, ListNode node) {
+        ListNode pre = null;
+        ListNode temp = head;
+        while (temp != null) {
+            pre = temp;
+            temp = temp.next;
+        }
+        pre.next = node;
+    }
+
+    public ListNode detectCycle3(ListNode head) {
+        if (head == null) {
+            return null;
+        }
+
+        Set<ListNode> set = new HashSet<>();
+        while (head != null) {
+            if (set.contains(head)) {
+                return head;
+            }
+
+            set.add(head);
+            head = head.next;
+        }
+
+        return null;
+    }
+
+    public boolean hasCycle(ListNode head) {
+        if (head == null) {
+            return false;
+        }
+
+        ListNode slow = head;
+        ListNode fast = head.next;
+
+        while (fast != null && fast.next != null) {
+            if (fast == slow) {
+                return true;
+            }
+            slow = slow.next;
+            fast = fast.next.next;
+
+        }
+
+        return false;
+    }
+
+    public boolean isPalindrome(ListNode head) {
+        List<Integer> list = new ArrayList<>();
+        while (head != null) {
+            list.add(head.val);
+            head = head.next;
+        }
+
+        for (int i = 0, j = list.size() - 1; i <= j; i++, j--) {
+            if (!Objects.equals(list.get(i), list.get(j))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public ListNode reverseList4(ListNode head) {
+        if (head == null) {
+            return null;
+        }
+
+        ListNode pre = null;
+        while (head != null) {
+            ListNode next = head.next;
+            head.next = pre;
+            pre = head;
+            head = next;
+        }
+
+        return pre;
+    }
+
+    public ListNode getIntersectionNode3(ListNode headA, ListNode headB) {
+        ListNode newHeadA = headA;
+        ListNode newHeadB = headB;
+
+        while (newHeadA != newHeadB) {
+            newHeadA = newHeadA == null ? newHeadB : newHeadA.next;
+            newHeadB = newHeadB == null ? newHeadA : newHeadB.next;
+        }
+
+        return newHeadA;
+    }
+
+    @Test
+    public void testSearchMatrix() {
+        //        int[][] matrix = new int[][] {{1,4,7,11,15}, {2,5,8,12,19}, {3,6,9,16,22}, {10,13,14,17,24}, {18,21,23,26,30}};
+        //        System.out.println(searchMatrix(matrix, 5));
+
+        int[][] matrix = new int[][] { { 1, 3, 5, 7, 9 }, { 2, 4, 6, 8, 10 }, { 11, 13, 15, 17, 19 }, { 12, 14, 16, 18, 20 }, { 21, 22, 23, 24, 25 } };
+        System.out.println(searchMatrix(matrix, 13));
+
+    }
+
+    public boolean searchMatrix(int[][] matrix, int target) {
+        int m = matrix.length;
+        int n = matrix[0].length;
+
+        int i = 0, j = n - 1;
+        while (i < m && j >= 0) {
+            if (matrix[i][j] == target) {
+                return true;
+            }
+
+            if (matrix[i][j] > target) {
+                j--;
+            } else {
+                i++;
+            }
+        }
+
+        return false;
+    }
+
+    @Test
+    public void testRotate() {
+        int[][] matrix = new int[][] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } };
+        rotate(matrix);
+        ResultUtils.printArr(matrix);
+
+    }
+
+    public void rotate(int[][] matrix) {
+        int n = matrix.length;
+        int temp;
+        for (int i = 0; i < n / 2; i++) {
+            for (int j = 0; j < (n + 1) / 2; j++) {
+                temp = matrix[i][j];
+                matrix[i][j] = matrix[n - j - 1][i];
+                matrix[n - j - 1][i] = matrix[n - i - 1][n - j - 1];
+                matrix[n - i - 1][n - j - 1] = matrix[j][n - i - 1];
+                matrix[j][n - i - 1] = temp;
+            }
+        }
+    }
+
+    @Test
+    public void testSpiralOrder() {
+        //        int[][] matrix = new int[][] {{1,2,3}, {4,5,6}, {7,8,9}};
+        //        int[][] matrix = new int[][] {{1,2,3,4}, {5,6,7,8}, {9,10,11,12}};
+        int[][] matrix = new int[][] { { 1, 2, 3, 4, 5 }, { 6, 7, 8, 9, 10 }, { 11, 12, 13, 14, 15 }, { 16, 17, 18, 19, 20 } };
+        List<Integer> integerList = spiralOrder(matrix);
+        System.out.println(integerList.stream().map(String::valueOf).collect(Collectors.joining(" ")));
+    }
+
+    public List<Integer> spiralOrder(int[][] matrix) {
+        int round = 0;
+        int m = matrix.length;
+        int n = matrix[0].length;
+        List<Integer> list = new ArrayList<>();
+        while (list.size() != m * n) {
+            for (int j = round; j < n - round; j++) {
+                list.add(matrix[round][j]);
+            }
+
+            if (list.size() == m * n) {
+                break;
+            }
+            for (int i = round + 1; i < m - round; i++) {
+                list.add(matrix[i][n - round - 1]);
+            }
+
+            if (list.size() == m * n) {
+                break;
+            }
+
+            for (int j = n - round - 2; j >= round; j--) {
+                list.add(matrix[m - round - 1][j]);
+            }
+
+            if (list.size() == m * n) {
+                break;
+            }
+            for (int i = m - round - 2; i > round; i--) {
+                list.add(matrix[i][round]);
+            }
+
+            round++;
+        }
+
+        return list;
+    }
+
+    @Test
+    public void testSetZeroes() {
+        //        int[][] matrix = new int[][] {{1,1,1}, {1,0,1}, {1,1,1}};
+        int[][] matrix = new int[][] { { 0, 1, 2, 0 }, { 3, 4, 5, 2 }, { 1, 3, 1, 5 } };
+        setZeroes(matrix);
+        ResultUtils.printArr(matrix);
+    }
+
+    public void setZeroes(int[][] matrix) {
+        Set<Integer> existZeroInRowIndexSet = new HashSet<>(matrix.length);
+        Set<Integer> existZeroInColumnIndexSet = new HashSet<>(matrix[0].length);
+
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j] == 0) {
+                    existZeroInRowIndexSet.add(i);
+                    existZeroInColumnIndexSet.add(j);
+                }
+            }
+        }
+
+        for (Integer i : existZeroInRowIndexSet) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                matrix[i][j] = 0;
+            }
+        }
+
+        for (Integer i : existZeroInColumnIndexSet) {
+            for (int j = 0; j < matrix.length; j++) {
+                matrix[j][i] = 0;
+            }
+        }
+    }
+
+    @Test
     public void testMaxSlidingWindow2() {
-        int[] arr = new int[]{1, 3, -1, -3, 5, 3, 6, 7};
+        int[] arr = new int[] { 1, 3, -1, -3, 5, 3, 6, 7 };
         ResultUtils.printArr(maxSlidingWindow2(arr, 3));
 
-        arr = new int[]{1};
+        arr = new int[] { 1 };
         ResultUtils.printArr(maxSlidingWindow2(arr, 1));
 
     }
@@ -3483,8 +3821,10 @@ public class LeetCodeTest {
         return head.val == val ? head.next : head;
     }
 
-    public class ListNode {
+    public static class ListNode {
+
         int val;
+
         ListNode next;
 
         ListNode() {
