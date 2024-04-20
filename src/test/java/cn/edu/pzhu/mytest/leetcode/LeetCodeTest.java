@@ -34,7 +34,6 @@ import java.util.stream.Stream;
 @SpringBootTest
 public class LeetCodeTest {
 
-
     @Test
     public void testMaxSlidingWindow2() {
         int[] arr = new int[]{1, 3, -1, -3, 5, 3, 6, 7};
