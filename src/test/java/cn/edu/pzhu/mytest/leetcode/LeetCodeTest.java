@@ -1,7 +1,6 @@
 package cn.edu.pzhu.mytest.leetcode;
 
 import cn.edu.pzhu.mytest.bean.MyLinkedList;
-import cn.edu.pzhu.mytest.bean.Node;
 import cn.edu.pzhu.mytest.leetcode.model.TreeNode;
 import cn.edu.pzhu.mytest.util.ResultUtils;
 import org.junit.jupiter.api.Test;
@@ -34,6 +33,155 @@ import java.util.stream.Stream;
  */
 @SpringBootTest
 public class LeetCodeTest {
+
+    @Test
+    public void testSortList() {
+        ListNode node = sortList(buildListNode(new int[] { 4, 2, 1, 3 }));
+        System.out.println(node);
+    }
+
+    public ListNode sortList(ListNode head) {
+        if (head == null) {
+            return null;
+        }
+
+        List<ListNode> list = new ArrayList<>();
+        ListNode temp = head;
+
+        while (temp != null) {
+            list.add(temp);
+            temp = temp.next;
+        }
+
+        list.sort(Comparator.comparing(node -> node.val));
+
+        for (int i = 1; i < list.size(); i++) {
+            list.get(i - 1).next = list.get(i);
+        }
+
+        list.get(list.size() - 1).next = null;
+        return list.get(0);
+    }
+
+    public Node copyRandomList(Node head) {
+        Node dummy = new Node(0);
+        Node pre = dummy;
+        Node temp = head;
+
+        Map<Node, Node> oldToNewNodeMap = new HashMap<>();
+        while (temp != null) {
+            Node node = new Node(temp.val);
+            oldToNewNodeMap.put(temp, node);
+
+            pre.next = node;
+            pre = node;
+            temp = temp.next;
+        }
+
+        temp = head;
+        pre = dummy.next;
+        while (temp != null) {
+            pre.random = oldToNewNodeMap.get(temp.random);
+            temp = temp.next;
+            pre = pre.next;
+        }
+
+        return dummy.next;
+    }
+
+    class Node {
+
+        int val;
+
+        Node next;
+
+        Node random;
+
+        public Node(int val) {
+            this.val = val;
+            this.next = null;
+            this.random = null;
+        }
+    }
+
+    @Test
+    public void testSwapPairs4() {
+        ListNode listNode = buildListNode(new int[] { 1, 2, 3, 4, 5 });
+        ListNode head = swapPairs4(listNode);
+        System.out.println(head);
+    }
+
+    public ListNode swapPairs4(ListNode head) {
+        ListNode dummy = new ListNode(0, head);
+        ListNode pre = dummy;
+        while (head != null && head.next != null) {
+            ListNode two = head.next;
+            ListNode three = two.next;
+
+            pre.next = two;
+            two.next = head;
+            head.next = three;
+
+            pre = head;
+            head = three;
+        }
+
+        return dummy.next;
+    }
+
+    @Test
+    public void testReverseKGroup() {
+        ListNode listNode = buildListNode(new int[] { 1, 2, 3, 4, 5 });
+        ListNode head = reverseKGroup(listNode, 2);
+        System.out.println(head);
+
+    }
+
+    public ListNode reverseKGroup(ListNode head, int k) {
+        ListNode dummy = new ListNode(0, head);
+        ListNode pre = dummy;
+        while (head != null) {
+            ListNode tail = pre;
+            for (int i = 0; i < k; i++) {
+                tail = tail.next;
+                if (tail == null) {
+                    return dummy.next;
+                }
+            }
+
+            ListNode next = tail.next;
+            reverseNode(head, tail);
+
+            pre.next = tail;
+            head.next = next;
+
+            pre = head;
+            head = head.next;
+        }
+
+        return dummy.next;
+    }
+
+    private void reverseNode(ListNode head, ListNode tail) {
+        ListNode pre = null;
+        ListNode end = tail.next;
+        while (head != end) {
+            ListNode next = head.next;
+            head.next = pre;
+            pre = head;
+            head = next;
+        }
+    }
+
+    private void swapNode(List<ListNode> list, int slow, int fast) {
+        while (slow <= fast) {
+            ListNode temp = list.get(slow);
+            list.set(slow, list.get(fast));
+            list.set(fast, temp);
+            slow++;
+            fast--;
+        }
+    }
 
     @Test
     public void testSwapPairs3() {
@@ -2348,12 +2496,12 @@ public class LeetCodeTest {
         return Math.min(left, right);
     }
 
-    public int maxDepth(Node root) {
+    public int maxDepth(cn.edu.pzhu.mytest.bean.Node root) {
         if (root == null) {
             return 0;
         }
 
-        Queue<Node> queue = new LinkedList<>();
+        Queue<cn.edu.pzhu.mytest.bean.Node> queue = new LinkedList<>();
         queue.offer(root);
 
         int depth = 0;
@@ -2361,9 +2509,9 @@ public class LeetCodeTest {
             int size = queue.size();
 
             while (size-- > 0) {
-                Node node = queue.poll();
+                cn.edu.pzhu.mytest.bean.Node node = queue.poll();
                 if (node.children != null) {
-                    for (Node child : node.children) {
+                    for (cn.edu.pzhu.mytest.bean.Node child : node.children) {
                         queue.offer(child);
                     }
                 }
@@ -2375,15 +2523,14 @@ public class LeetCodeTest {
         return depth;
     }
 
-
-    public int maxDepth2(Node root) {
+    public int maxDepth2(cn.edu.pzhu.mytest.bean.Node root) {
         if (root == null) {
             return 0;
         }
 
         int maxDepth = 0;
         if (root.children != null) {
-            for (Node node : root.children) {
+            for (cn.edu.pzhu.mytest.bean.Node node : root.children) {
                 maxDepth = Math.max(maxDepth, maxDepth(node));
             }
         }
@@ -3837,6 +3984,18 @@ public class LeetCodeTest {
         ListNode(int val, ListNode next) {
             this.val = val;
             this.next = next;
+        }
+
+        @Override
+        public String toString() {
+            String value = val + "";
+            ListNode next = this.next;
+            while (next != null) {
+                value += "->" + next.val;
+                next = next.next;
+            }
+
+            return value;
         }
     }
 
