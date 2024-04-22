@@ -34,6 +34,248 @@ import java.util.stream.Stream;
 @SpringBootTest
 public class LeetCodeTest {
 
+    public void flatten(TreeNode root) {
+        TreeNode dummy = new TreeNode(0);
+        preOrder(root, dummy);
+        root.right = dummy.right.right;
+    }
+
+    private void preOrder(TreeNode root, TreeNode newRoot) {
+        if (root == null) {
+            return;
+        }
+
+        newRoot.right = new TreeNode(root.val);
+        preOrder(root.left, newRoot.right);
+        preOrder(root.right, newRoot.right);
+    }
+
+    public List<Integer> rightSideView(TreeNode root) {
+        if (root == null) {
+            return new ArrayList<>();
+        }
+
+        Deque<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+
+        List<Integer> list = new ArrayList<>();
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 1; i <= size; i++) {
+                TreeNode poll = queue.poll();
+                if (i == size) {
+                    list.add(poll.val);
+                }
+                if (poll.left != null) {
+                    queue.add(poll.left);
+                }
+                if (poll.right != null) {
+                    queue.add(poll.right);
+                }
+            }
+        }
+
+        return list;
+    }
+
+    public int kthSmallest(TreeNode root, int k) {
+        Deque<TreeNode> queue = new LinkedList<>();
+        while (root != null || !queue.isEmpty()) {
+            while (root != null) {
+                queue.push(root);
+                root = root.left;
+            }
+
+            root = queue.poll();
+            k--;
+            if (k == 0) {
+                break;
+            }
+
+            root = root.right;
+        }
+        return root.val;
+    }
+
+    public boolean isValidBST(TreeNode root) {
+        List<Integer> list = new ArrayList<>();
+        inorderForValidBST(root, list);
+
+        for (int i = 1; i < list.size(); i++) {
+            int pre = list.get(i - 1);
+            int current = list.get(i);
+            if (pre >= current) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private void inorderForValidBST(TreeNode root, List<Integer> list) {
+        if (root == null) {
+            return;
+        }
+        inorderForValidBST(root.left, list);
+        list.add(root.val);
+        inorderForValidBST(root.right, list);
+    }
+
+    public TreeNode sortedArrayToBST2(int[] nums) {
+        return dfsBuildBST(nums, 0, nums.length - 1);
+    }
+
+    private TreeNode dfsBuildBST(int[] nums, int left, int right) {
+        if (left > right) {
+            return null;
+        }
+
+        if (left == right) {
+            return new TreeNode(nums[left]);
+        }
+
+        int mid = left + ((right - left) >> 1);
+        TreeNode l = dfsBuildBST(nums, left, mid - 1);
+        TreeNode r = dfsBuildBST(nums, mid + 1, right);
+        return new TreeNode(nums[mid], l, r);
+    }
+
+    public List<List<Integer>> levelOrder3(TreeNode root) {
+        if (root == null) {
+            return new ArrayList<>();
+        }
+
+        List<List<Integer>> resultList = new ArrayList<>();
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            List<Integer> list = new ArrayList<>(size);
+            while (size > 0) {
+                TreeNode poll = queue.poll();
+                if (poll.left != null) {
+                    queue.add(poll.left);
+                }
+                if (poll.right != null) {
+                    queue.add(poll.right);
+                }
+
+                list.add(poll.val);
+                size--;
+            }
+
+            resultList.add(list);
+        }
+
+        return resultList;
+    }
+
+    public boolean isSymmetric2(TreeNode root) {
+        if (root == null) {
+            return true;
+        }
+
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+
+            StringBuilder sb = new StringBuilder();
+            while (size > 0) {
+                TreeNode poll = queue.poll();
+                if (poll.left != null) {
+                    queue.add(poll.left);
+                }
+
+                if (poll.right != null) {
+                    queue.add(poll.right);
+                }
+
+                sb.append(poll.val);
+                size--;
+            }
+
+            if (!sb.toString().equals(sb.reverse().toString())) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public boolean isSymmetric(TreeNode root) {
+        if (root == null) {
+            return true;
+        }
+
+        return isSymmetricTree(root, root);
+    }
+
+    public boolean isSymmetricTree(TreeNode left, TreeNode right) {
+        if (left == null && right == null) {
+            return true;
+        }
+
+        if (left == null || right == null) {
+            return false;
+        }
+
+        return left.val == right.val && isSymmetricTree(left.left, right.right) && isSymmetricTree(left.right, right.left);
+    }
+
+    public TreeNode invertTree(TreeNode root) {
+        if (root == null) {
+            return null;
+        }
+
+        invertTree(root.left);
+        invertTree(root.right);
+
+        TreeNode temp = root.left;
+        root.left = root.right;
+        root.right = temp;
+
+        return root;
+    }
+
+    public int maxDepth2(TreeNode root) {
+        Set<Integer> depthSet = new HashSet<>();
+        dfsForDepth(root, 1, depthSet);
+        int max = 0;
+        for (Integer integer : depthSet) {
+            max = Math.max(integer, max);
+        }
+        return max;
+    }
+
+    private void dfsForDepth(TreeNode root, int depth, Set<Integer> depthSet) {
+        if (root == null) {
+            return;
+        }
+
+        depthSet.add(depth);
+        dfsForDepth(root.left, depth + 1, depthSet);
+        dfsForDepth(root.right, depth + 1, depthSet);
+    }
+
+    public List<Integer> inorderTraversal2(TreeNode root) {
+        List<Integer> list = new ArrayList<>();
+        inorder(root, list);
+        return list;
+    }
+
+    private void inorder(TreeNode root, List<Integer> list) {
+        if (root == null) {
+            return;
+        }
+
+        inorder(root.left, list);
+        list.add(root.val);
+        inorder(root.right, list);
+    }
+
     @Test
     public void testSortList() {
         ListNode node = sortList(buildListNode(new int[] { 4, 2, 1, 3 }));
