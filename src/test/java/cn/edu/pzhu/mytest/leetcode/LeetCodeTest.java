@@ -34,6 +34,75 @@ import java.util.stream.Stream;
 @SpringBootTest
 public class LeetCodeTest {
 
+    public int maxAreaOfIsland(int[][] grid) {
+        int m = grid.length;
+        int n = grid[0].length;
+
+        int count = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    count = Math.max(count, dfsForMaxAreaOfIsland(grid, i, j));
+                }
+
+            }
+        }
+
+        return count;
+    }
+
+    private int dfsForMaxAreaOfIsland(int[][] grid, int row, int column) {
+        int m = grid.length;
+        int n = grid[0].length;
+        if (row < 0 || column < 0 || row >= m || column >= n) {
+            return 0;
+        }
+
+        if (grid[row][column] != 1) {
+            return 0;
+        }
+
+        grid[row][column] = 2;
+        int count = 0;
+        count += dfsForMaxAreaOfIsland(grid, row - 1, column);
+        count += dfsForMaxAreaOfIsland(grid, row + 1, column);
+        count += dfsForMaxAreaOfIsland(grid, row, column - 1);
+        count += dfsForMaxAreaOfIsland(grid, row, column + 1);
+        return count + 1;
+    }
+
+    public int numIslands(char[][] grid) {
+        int m = grid.length;
+        int n = grid[0].length;
+
+        int count = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == '1') {
+                    count++;
+                    dfsForNumLands(grid, i, j);
+                }
+
+            }
+        }
+
+        return count;
+    }
+
+    private void dfsForNumLands(char[][] grid, int row, int column) {
+        int m = grid.length;
+        int n = grid[0].length;
+        if (row < 0 || column < 0 || row >= m || column >= n || grid[row][column] == '0') {
+            return;
+        }
+
+        grid[row][column] = '0';
+        dfsForNumLands(grid, row - 1, column);
+        dfsForNumLands(grid, row + 1, column);
+        dfsForNumLands(grid, row, column - 1);
+        dfsForNumLands(grid, row, column + 1);
+    }
+
     public void flatten(TreeNode root) {
         TreeNode dummy = new TreeNode(0);
         preOrder(root, dummy);
