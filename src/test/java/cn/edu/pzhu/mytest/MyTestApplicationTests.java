@@ -75,6 +75,11 @@ class MyTestApplicationTests {
     @Autowired
     private SportInvocationHandler sportInvocationHandler;
 
+    @Test
+    public void parseKaExcel() {
+        String path = "/Users/hfy/Desktop/2024ka.xlsx";
+
+    }
 
     @Test
     public void testSecondOfDay() {
