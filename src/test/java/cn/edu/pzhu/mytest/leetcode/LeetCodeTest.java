@@ -34,6 +34,22 @@ import java.util.stream.Stream;
 @SpringBootTest
 public class LeetCodeTest {
 
+    @Test
+    public void testSubsets2() {
+        int[] nums = new int[] { 1, 2, 3 };
+        Subsets subsets = new Subsets();
+        List<List<Integer>> list = subsets.subsets(nums);
+        printListList(list);
+    }
+
+    @Test
+    public void testPermute2() {
+        int[] nums = new int[] { 1, 2, 3 };
+        Permute permute = new Permute();
+        List<List<Integer>> list = permute.permute(nums);
+        printListList(list);
+    }
+
     public int maxAreaOfIsland(int[][] grid) {
         int m = grid.length;
         int n = grid[0].length;
