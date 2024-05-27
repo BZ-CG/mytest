@@ -35,6 +35,39 @@ import java.util.stream.Stream;
 public class LeetCodeTest {
 
     @Test
+    public void testDominantIndex() {
+
+        int[] arr = new int[] { 3, 6, 1, 0 };
+        System.out.println(dominantIndex(arr));
+
+        arr = new int[] { 1, 2, 3, 4 };
+        System.out.println(dominantIndex(arr));
+
+    }
+
+    public int dominantIndex(int[] nums) {
+        int max = -1;
+        int index = -1;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] > max) {
+                max = nums[i];
+                index = i;
+            }
+        }
+
+        for (int num : nums) {
+            if (num == max) {
+                continue;
+            }
+            if (max < 2 * num) {
+                return -1;
+            }
+        }
+
+        return index;
+    }
+
+    @Test
     public void testSubsets2() {
         int[] nums = new int[] { 1, 2, 3 };
         Subsets subsets = new Subsets();
