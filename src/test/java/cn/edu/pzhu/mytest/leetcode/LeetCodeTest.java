@@ -35,6 +35,392 @@ import java.util.stream.Stream;
 public class LeetCodeTest {
 
     @Test
+    public void testDecodeString() {
+        System.out.println(decodeString("3[a]2[bc]"));
+        System.out.println(decodeString("3[a2[c]]"));
+        System.out.println(decodeString("2[abc]3[cd]ef"));
+        System.out.println(decodeString("abc3[cd]xyz"));
+
+        System.out.println();
+
+        System.out.println(decodeString2("3[a]2[bc]"));
+        System.out.println(decodeString2("3[a2[c]]"));
+        System.out.println(decodeString2("2[abc]3[cd]ef"));
+        System.out.println(decodeString2("abc3[cd]xyz"));
+    }
+
+    public String decodeString2(String s) {
+        Stack<Integer> numberStack = new Stack<>();
+        Stack<Character> stringStack = new Stack<>();
+
+        char[] charArray = s.toCharArray();
+        for (int i = 0; i < charArray.length; ) {
+            if (Character.isDigit(charArray[i])) {
+                int start = i;
+                while (Character.isDigit(charArray[i])) {
+                    i++;
+                }
+
+                numberStack.push(Integer.parseInt(s.substring(start, i)));
+                continue;
+            }
+
+            if (Character.isLetter(charArray[i]) || charArray[i] == '[') {
+                stringStack.push(charArray[i]);
+                i++;
+                continue;
+            }
+
+            String substring = "";
+            while (stringStack.peek() != '[') {
+                substring = stringStack.pop() + substring;
+            }
+
+            String newString = "";
+            int number = numberStack.pop();
+            while (number-- > 0) {
+                newString += substring;
+            }
+
+            stringStack.pop();
+            for (char c : newString.toCharArray()) {
+                stringStack.push(c);
+            }
+            i++;
+        }
+
+        String result = "";
+        while (!stringStack.isEmpty()) {
+            result = stringStack.pop() + result;
+        }
+
+        return result;
+    }
+
+    public String decodeString(String s) {
+        int lastIndexOf = s.lastIndexOf("[");
+        if (lastIndexOf == -1) {
+            return s;
+        }
+
+        int numberIndex = lastIndexOf - 1;
+        while (numberIndex >= 0 && Character.isDigit(s.toCharArray()[numberIndex])) {
+            numberIndex--;
+        }
+
+        int number = Integer.parseInt(s.substring(numberIndex + 1, lastIndexOf));
+        int substringIndex = lastIndexOf + 1;
+        while (substringIndex < s.length() && Character.isLetter(s.toCharArray()[substringIndex])) {
+            substringIndex++;
+        }
+
+        String substring = s.substring(lastIndexOf + 1, substringIndex);
+        String newString = s.substring(0, numberIndex + 1);
+        for (int i = 0; i < number; i++) {
+            newString += substring;
+        }
+
+        newString += s.substring(substringIndex + 1);
+        return decodeString(newString);
+    }
+
+    @Test
+    public void testFindMin() {
+        System.out.println(findMin(new int[] { 3, 4, 5, 1, 2 }));
+        System.out.println(findMin(new int[] { 4, 5, 6, 7, 0, 1, 2 }));
+        System.out.println(findMin(new int[] { 11, 13, 15, 17 }));
+        System.out.println(findMin(new int[] { 2, 1 }));
+
+        System.out.println();
+
+        System.out.println(findMin2(new int[] { 3, 4, 5, 1, 2 }));
+        System.out.println(findMin2(new int[] { 4, 5, 6, 7, 0, 1, 2 }));
+        System.out.println(findMin2(new int[] { 11, 13, 15, 17 }));
+        System.out.println(findMin2(new int[] { 2, 1 }));
+    }
+
+    public int findMin2(int[] nums) {
+        int mid;
+        int left = 0, right = nums.length - 1;
+        while (left < right) {
+            mid = left + ((right - left) >> 1);
+            if (nums[mid] < nums[right]) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return nums[left];
+    }
+
+    public int findMin(int[] nums) {
+        return getMinByBinarySearch(nums, 0, nums.length - 1);
+    }
+
+    private int getMinByBinarySearch(int[] nums, int left, int right) {
+        if (left == right) {
+            return nums[left];
+        }
+
+        if (nums[left] < nums[right]) {
+            return nums[left];
+        }
+
+        int mid = left + ((right - left) >> 1);
+        if (nums[left] <= nums[mid]) {
+            return Math.min(getMinByBinarySearch(nums, left, mid), getMinByBinarySearch(nums, Math.min(mid + 1, right), right));
+        }
+
+        return Math.min(getMinByBinarySearch(nums, left, Math.max(mid - 1, left)), getMinByBinarySearch(nums, mid, right));
+    }
+
+    @Test
+    public void testFindMedianSortedArrays() {
+        System.out.println(findMedianSortedArrays(new int[] { 1, 3 }, new int[] { 2 }));
+        System.out.println(findMedianSortedArrays(new int[] { 1, 2 }, new int[] { 3, 4 }));
+
+    }
+
+    public double findMedianSortedArrays(int[] nums1, int[] nums2) {
+        int m = nums1.length;
+        int n = nums2.length;
+        List<Integer> list = new ArrayList<>(m + n);
+        int index1 = 0, index2 = 0;
+        while (index1 < m && index2 < n) {
+            if (nums1[index1] <= nums2[index2]) {
+                list.add(nums1[index1]);
+                index1++;
+            } else {
+                list.add(nums2[index2]);
+                index2++;
+            }
+        }
+
+        while (index1 < m) {
+            list.add(nums1[index1]);
+            index1++;
+        }
+
+        while (index2 < n) {
+            list.add(nums2[index2]);
+            index2++;
+        }
+
+        if (((m + n) & 1) == 1) {
+            return list.get((m + n) / 2);
+        }
+
+        return (list.get((m + n) / 2 - 1) + list.get((m + n) / 2)) / 2.0;
+    }
+
+    @Test
+    public void testSearch() {
+        System.out.println(search(new int[] { 4, 5, 6, 7, 0, 1, 2 }, 0));
+        System.out.println(search(new int[] { 4, 5, 6, 7, 0, 1, 2 }, 5));
+        System.out.println(search(new int[] { 4, 5, 6, 7, 0, 1, 2 }, 3));
+        System.out.println(search(new int[] { 1 }, 3));
+        System.out.println(search(new int[] { 3, 1 }, 1));
+    }
+
+    public int search(int[] nums, int target) {
+        int mid;
+        int left = 0, right = nums.length - 1;
+        while (left <= right) {
+            mid = left + ((right - left) >> 1);
+            if (target == nums[mid]) {
+                return mid;
+            }
+            if (nums[left] <= nums[mid]) {
+                if (target >= nums[left] && target < nums[mid]) {
+                    right = mid - 1;
+                } else {
+                    left = mid + 1;
+                }
+            } else {
+                if (target > nums[mid] && target <= nums[right]) {
+                    left = mid + 1;
+                } else {
+                    right = mid - 1;
+                }
+            }
+        }
+
+        return -1;
+    }
+
+    @Test
+    public void testSearchRange() {
+        int[] nums = new int[] { 5, 7, 7, 8, 8, 10 };
+        ResultUtils.printArr(searchRange(nums, 8));
+        ResultUtils.printArr(searchRange(nums, 6));
+        ResultUtils.printArr(searchRange(new int[] {}, 0));
+
+        System.out.println();
+
+        ResultUtils.printArr(searchRange2(nums, 8));
+        ResultUtils.printArr(searchRange2(nums, 6));
+        ResultUtils.printArr(searchRange2(new int[] {}, 0));
+
+    }
+
+    public int[] searchRange2(int[] nums, int target) {
+        if (nums.length == 0) {
+            return new int[] { -1, -1 };
+        }
+
+        int mid;
+        int left = 0, right = nums.length - 1;
+        int minLeft = -1;
+        int maxRight = -1;
+        while (left <= right) {
+            mid = left + ((right - left) >> 1);
+            if (nums[mid] > target) {
+                right = mid - 1;
+            } else if (nums[mid] < target) {
+                left = mid + 1;
+            } else {
+                minLeft = mid;
+                right = mid - 1;
+            }
+        }
+
+        left = 0;
+        right = nums.length - 1;
+        while (left <= right) {
+            mid = left + ((right - left) >> 1);
+            if (nums[mid] > target) {
+                right = mid - 1;
+            } else if (nums[mid] < target) {
+                left = mid + 1;
+            } else {
+                maxRight = mid;
+                left = mid + 1;
+            }
+        }
+
+        return new int[] { minLeft, maxRight };
+    }
+
+    public int[] searchRange(int[] nums, int target) {
+        if (nums.length == 0) {
+            return new int[] { -1, -1 };
+        }
+
+        int mid;
+        int left = 0, right = nums.length - 1, result = -1;
+        while (left <= right) {
+            mid = left + ((right - left) >> 1);
+            if (nums[mid] > target) {
+                right = mid - 1;
+            } else if (nums[mid] < target) {
+                left = mid + 1;
+            } else {
+                result = mid;
+                break;
+            }
+        }
+
+        if (result == -1) {
+            return new int[] { -1, -1 };
+        }
+
+        int start = result;
+        while (start >= 0) {
+            if (nums[start] != target) {
+                break;
+            }
+            start--;
+        }
+
+        int end = result;
+        while (end < nums.length) {
+            if (nums[end] != target) {
+                break;
+            }
+            end++;
+        }
+
+        return new int[] { start + 1, end - 1 };
+    }
+
+    @Test
+    public void testSearchMatrix2() {
+        int[][] matrix = new int[][] { { 1, 3, 5, 7 }, { 10, 11, 16, 20 }, { 23, 30, 34, 60 } };
+        System.out.println(searchMatrix2(matrix, 3));
+        System.out.println(searchMatrix2(matrix, 13));
+        System.out.println(searchMatrix2(new int[][] { { 1 } }, 0));
+    }
+
+    public boolean searchMatrix2(int[][] matrix, int target) {
+        int row = binaryInColumn(matrix, target);
+        return binaryInRow(matrix[row], target);
+    }
+
+    private boolean binaryInRow(int[] matrix, int target) {
+        int mid;
+        int left = 0, right = matrix.length - 1;
+        while (left <= right) {
+            mid = left + ((right - left) >> 1);
+            if (matrix[mid] > target) {
+                right = mid - 1;
+            } else if (matrix[mid] < target) {
+                left = mid + 1;
+            } else {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private int binaryInColumn(int[][] matrix, int target) {
+        int mid;
+        int left = 0, right = matrix.length - 1;
+        while (left <= right) {
+            mid = left + ((right - left) >> 1);
+            if (matrix[mid][0] > target) {
+                right = mid - 1;
+            } else if (matrix[mid][0] < target) {
+                left = mid + 1;
+            } else {
+                return mid;
+            }
+        }
+
+        return Math.max(left - 1, 0);
+    }
+
+    @Test
+    public void testSearchInsert2() {
+        int[] nums = new int[] { 1, 3, 5, 6 };
+        System.out.println(searchInsert2(nums, 5));
+        System.out.println(searchInsert2(nums, 2));
+        System.out.println(searchInsert2(nums, 7));
+        System.out.println(searchInsert2(nums, -1));
+    }
+
+    public int searchInsert2(int[] nums, int target) {
+        int mid;
+        int left = 0, right = nums.length - 1;
+        while (left < right) {
+            mid = left + ((right - left) >> 1);
+            if (nums[mid] == target) {
+                return mid;
+            } else if (nums[mid] > target) {
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+
+        if (target > nums[left]) {
+            return left + 1;
+        }
+
+        return left;
+    }
+
+    @Test
     public void testDominantIndex() {
 
         int[] arr = new int[] { 3, 6, 1, 0 };
