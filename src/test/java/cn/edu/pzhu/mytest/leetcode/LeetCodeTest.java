@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.Random;
 import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
@@ -33,6 +34,175 @@ import java.util.stream.Stream;
  */
 @SpringBootTest
 public class LeetCodeTest {
+
+    @Test
+    public void testTopKFrequent1() {
+        ResultUtils.printArr(topKFrequent1(new int[] { 1, 1, 1, 2, 2, 3 }, 2));
+        ResultUtils.printArr(topKFrequent1(new int[] { 1 }, 1));
+        ResultUtils.printArr(topKFrequent1(new int[] { -1, -1 }, 1));
+
+        System.out.println();
+
+        ResultUtils.printArr(topKFrequent3(new int[] { 1, 1, 1, 2, 2, 3 }, 2));
+        ResultUtils.printArr(topKFrequent3(new int[] { 1 }, 1));
+        ResultUtils.printArr(topKFrequent3(new int[] { -1, -1 }, 1));
+    }
+
+    public int[] topKFrequent3(int[] nums, int k) {
+        Map<Integer, Integer> countMap = new HashMap<>(nums.length);
+        for (int num : nums) {
+            countMap.put(num, countMap.getOrDefault(num, 0) + 1);
+        }
+
+        List<Integer>[] listArr = new List[nums.length + 1];
+        for (Map.Entry<Integer, Integer> entry : countMap.entrySet()) {
+            Integer key = entry.getKey();
+            Integer value = entry.getValue();
+            if (listArr[value] == null) {
+                listArr[value] = new ArrayList<>();
+            }
+
+            listArr[value].add(key);
+        }
+
+        int index = 0;
+        int[] arr = new int[k];
+        for (int i = listArr.length - 1; i >= 0; i--) {
+            List<Integer> list = listArr[i];
+            if (list == null) {
+                continue;
+            }
+
+            for (Integer value : list) {
+                if (index == k) {
+                    return arr;
+                }
+
+                arr[index++] = value;
+            }
+        }
+
+        return arr;
+    }
+
+    public int[] topKFrequent1(int[] nums, int k) {
+        Map<Integer, Integer> countMap = new HashMap<>(nums.length);
+        for (int num : nums) {
+            countMap.put(num, countMap.getOrDefault(num, 0) + 1);
+        }
+
+        PriorityQueue<Map.Entry<Integer, Integer>> queue = new PriorityQueue<>(k, Comparator.comparingInt(Map.Entry::getValue));
+        for (Map.Entry<Integer, Integer> entry : countMap.entrySet()) {
+            if (queue.isEmpty() || queue.size() < k) {
+                queue.add(entry);
+                continue;
+            }
+
+            if (queue.peek().getValue() < entry.getValue()) {
+                queue.poll();
+                queue.add(entry);
+            }
+        }
+
+        List<Integer> list = queue.stream().map(Map.Entry::getKey).collect(Collectors.toList());
+        int[] arr = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            arr[i] = list.get(i);
+        }
+
+        return arr;
+    }
+
+    @Test
+    public void testFindKthLargest() {
+        System.out.println(findKthLargest(new int[] { 3, 2, 1, 5, 6, 4, 5 }, 3));
+        System.out.println(findKthLargest(new int[] { 3, 2, 3, 1, 2, 4, 5, 5, 6 }, 4));
+        System.out.println();
+        System.out.println(findKthLargest2(new int[] { 3, 2, 1, 5, 6, 4, 5 }, 3));
+        System.out.println(findKthLargest2(new int[] { 3, 2, 3, 1, 2, 4, 5, 5, 6 }, 4));
+    }
+
+    public int findKthLargest2(int[] nums, int k) {
+        return quickSort(nums, 0, nums.length - 1, k - 1);
+    }
+
+    private int quickSort(int[] nums, int low, int high, int k) {
+        if (low <= high) {
+            int pivot = partition(nums, low, high);
+            if (pivot == k) {
+                return nums[pivot];
+            }
+            if (pivot > k) {
+                return quickSort(nums, low, pivot - 1, k);
+            }
+            return quickSort(nums, pivot + 1, high, k);
+        }
+
+        return 0;
+    }
+
+    private int partition(int[] nums, int low, int high) {
+        int pivotIndex = low + new Random().nextInt(high - low + 1);
+        int pivot = nums[pivotIndex];
+        int i = low;
+        swap(nums, pivotIndex, high);
+        for (int j = low; j < high; j++) {
+            if (nums[j] >= pivot) {
+                swap(nums, i, j);
+                i++;
+            }
+        }
+
+        swap(nums, i, high);
+        return i;
+    }
+
+    private void swap(int[] nums, int i, int j) {
+        int temp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = temp;
+    }
+
+    public int findKthLargest(int[] nums, int k) {
+        PriorityQueue<Integer> queue = new PriorityQueue<>(k);
+        for (int i = 0; i < nums.length; i++) {
+            if (queue.isEmpty() || queue.size() < k) {
+                queue.add(nums[i]);
+                continue;
+            }
+
+            if (queue.peek() < nums[i]) {
+                queue.poll();
+                queue.add(nums[i]);
+            }
+        }
+
+        return queue.peek();
+    }
+
+    @Test
+    public void testDailyTemperatures2() {
+        ResultUtils.printArr(dailyTemperatures2(new int[] { 73, 74, 75, 71, 69, 72, 76, 73 }));
+        ResultUtils.printArr(dailyTemperatures2(new int[] { 30, 40, 50, 60 }));
+        ResultUtils.printArr(dailyTemperatures2(new int[] { 30, 60, 90 }));
+
+    }
+
+    public int[] dailyTemperatures2(int[] temperatures) {
+        int[] answer = new int[temperatures.length];
+        Stack<Integer> stack = new Stack<>();
+        for (int i = 0; i < temperatures.length; i++) {
+            int temperature = temperatures[i];
+            while (!stack.isEmpty() && temperatures[stack.peek()] < temperature) {
+                Integer pop = stack.pop();
+                answer[pop] = i - pop;
+            }
+
+            stack.push(i);
+        }
+
+        return answer;
+    }
 
     @Test
     public void testDecodeString() {
