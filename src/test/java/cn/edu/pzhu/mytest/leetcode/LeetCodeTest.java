@@ -36,6 +36,149 @@ import java.util.stream.Stream;
 public class LeetCodeTest {
 
     @Test
+    public void testGenerate() {
+        ResultUtils.printList(generate(5));
+        ResultUtils.printList(generate(1));
+    }
+
+    public List<List<Integer>> generate(int numRows) {
+        List<List<Integer>> list = new ArrayList<>();
+        for (int i = 0; i < numRows; i++) {
+            List<Integer> rowList = new ArrayList<>();
+            for (int j = 0; j <= i; j++) {
+                if (j == 0 || j == i) {
+                    rowList.add(1);
+                } else {
+                    rowList.add(list.get(i - 1).get(j - 1) + list.get(i - 1).get(j));
+                }
+            }
+
+            list.add(rowList);
+        }
+
+        return list;
+    }
+
+    @Test
+    public void testClimbStairs1() {
+        for (int i = 1; i <= 10; i++) {
+            System.out.println(climbStairs1(i));
+        }
+    }
+
+    public int climbStairs1(int n) {
+        if (n < 3) {
+            return n;
+        }
+
+        int a1 = 1, a2 = 2, a3 = 0;
+        for (int i = 3; i <= n; i++) {
+            a3 = a1 + a2;
+            a1 = a2;
+            a2 = a3;
+        }
+
+        return a3;
+    }
+
+    @Test
+    public void testPartitionLabels3() {
+        System.out.println(partitionLabels3("ababcbacadefegdehijhklij"));
+        System.out.println(partitionLabels3("eccbbbbdec"));
+    }
+
+    public List<Integer> partitionLabels3(String s) {
+        List<Integer> list = new ArrayList<>();
+        char[] chars = s.toCharArray();
+        int[] lastIndexArr = new int[26];
+        for (int i = 0; i < chars.length; i++) {
+            lastIndexArr[chars[i] - 'a'] = i;
+        }
+
+        int start = 0, end = 0;
+        for (int i = 0; i < chars.length; i++) {
+            end = Math.max(end, lastIndexArr[chars[i] - 'a']);
+            if (i == end) {
+                list.add(end - start + 1);
+                start = i + 1;
+            }
+        }
+
+        return list;
+    }
+
+    @Test
+    public void testJump2() {
+        System.out.println(jump2(new int[] { 2, 3, 1, 1, 4 }));
+        System.out.println(jump2(new int[] { 2, 3, 0, 1, 4 }));
+    }
+
+    public int jump2(int[] nums) {
+        if (nums.length == 1) {
+            return 0;
+        }
+
+        int step = 0;
+        int cover = 0;
+        int nextCover = 0;
+
+        for (int i = 0; i < nums.length - 1; i++) {
+            nextCover = Math.max(nextCover, nums[i] + i);
+            if (i == cover) {
+                cover = nextCover;
+                step++;
+            }
+        }
+
+        return step;
+    }
+
+    @Test
+    public void testCanJump2() {
+        System.out.println(canJump2(new int[] { 2, 3, 1, 1, 4 }));
+        System.out.println(canJump2(new int[] { 3, 2, 1, 0, 4 }));
+        System.out.println(canJump2(new int[] { 0, 2, 3 }));
+    }
+
+    public boolean canJump2(int[] nums) {
+        int max = 0;
+        int n = nums.length;
+        for (int i = 0; i < n; i++) {
+            if (i <= max) {
+                max = Math.max(max, nums[i] + i);
+                if (max >= n - 1) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    @Test
+    public void testMaxProfit4() {
+        System.out.println(maxProfit3(new int[] { 7, 1, 5, 3, 6, 4 }));
+        System.out.println(maxProfit3(new int[] { 7, 6, 4, 3, 1 }));
+    }
+
+    public int maxProfit3(int[] prices) {
+        int n = prices.length;
+        int[] dp = new int[n];
+        dp[n - 1] = prices[n - 1];
+
+        for (int i = n - 2; i >= 0; i--) {
+            dp[i] = Math.max(dp[i + 1], prices[i]);
+        }
+
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            max = Math.max(dp[i] - prices[i], max);
+        }
+
+        return max;
+    }
+
+    @Test
     public void testTopKFrequent1() {
         ResultUtils.printArr(topKFrequent1(new int[] { 1, 1, 1, 2, 2, 3 }, 2));
         ResultUtils.printArr(topKFrequent1(new int[] { 1 }, 1));
