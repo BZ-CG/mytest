@@ -36,6 +36,29 @@ import java.util.stream.Stream;
 public class LeetCodeTest {
 
     @Test
+    public void testRob() {
+        System.out.println(rob(new int[] { 1, 2, 3, 1 }));
+        System.out.println(rob(new int[] { 2, 7, 9, 3, 1 }));
+    }
+
+    public int rob(int[] nums) {
+        if (nums.length == 1) {
+            return nums[0];
+        }
+
+        int n = nums.length;
+        int first = nums[0];
+        int second = Math.max(nums[0], nums[1]);
+        for (int i = 2; i < n; i++) {
+            int temp = second;
+            second = Math.max(first + nums[i], second);
+            first = temp;
+        }
+
+        return second;
+    }
+
+    @Test
     public void testGenerate() {
         ResultUtils.printList(generate(5));
         ResultUtils.printList(generate(1));
