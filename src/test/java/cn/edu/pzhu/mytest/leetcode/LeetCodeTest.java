@@ -36,6 +36,83 @@ import java.util.stream.Stream;
 public class LeetCodeTest {
 
     @Test
+    public void testCoinChange() {
+        System.out.println(coinChange(new int[] { 1, 2, 5 }, 11));
+        System.out.println(coinChange(new int[] { 2 }, 3));
+        System.out.println(coinChange(new int[] { 1 }, 0));
+        System.out.println(coinChange(new int[] { 186, 419, 83, 408 }, 6249));
+    }
+
+    public int coinChange(int[] coins, int amount) {
+        int dp[] = new int[amount + 1];
+        Arrays.fill(dp, amount + 1);
+        dp[0] = 0;
+        for (int i = 1; i <= amount; i++) {
+            for (int j = 0; j < coins.length; j++) {
+                if (coins[j] <= i) {
+                    dp[i] = Math.min(dp[i], dp[i - coins[j]] + 1);
+                }
+            }
+        }
+
+        return dp[amount] > amount ? -1 : dp[amount];
+    }
+
+    @Test
+    public void testNumSquares() {
+        System.out.println(numSquares(12));
+        System.out.println(numSquares(13));
+        System.out.println(numSquares2(12));
+        System.out.println(numSquares2(13));
+
+    }
+
+    public int numSquares2(int n) {
+        int[] dp = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            int min = Integer.MAX_VALUE;
+            for (int j = 1; j * j <= i; j++) {
+                min = Math.min(min, dp[i - j * j]);
+            }
+            dp[i] = min + 1;
+        }
+
+        return dp[n];
+    }
+
+    public int numSquares(int n) {
+        if (isAnswer4(n)) {
+            return 4;
+        }
+
+        if (isPerfectSquare(n)) {
+            return 1;
+        }
+
+        for (int i = 1; i * i <= n; i++) {
+            int j = n - i * i;
+            if (isPerfectSquare(j)) {
+                return 2;
+            }
+        }
+
+        return 3;
+    }
+
+    private boolean isPerfectSquare(int n) {
+        int m = (int) Math.sqrt(n);
+        return m * m == n;
+    }
+
+    private boolean isAnswer4(int n) {
+        while (n % 4 == 0) {
+            n /= 4;
+        }
+
+        return n % 8 == 7;
+    }
+
+    @Test
     public void testRob() {
         System.out.println(rob(new int[] { 1, 2, 3, 1 }));
         System.out.println(rob(new int[] { 2, 7, 9, 3, 1 }));
