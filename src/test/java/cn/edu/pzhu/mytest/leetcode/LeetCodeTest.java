@@ -36,6 +36,66 @@ import java.util.stream.Stream;
 public class LeetCodeTest {
 
     @Test
+    public void testWordBreak() {
+        System.out.println(wordBreak("leetcode", Arrays.asList("leet", "code")));
+        System.out.println(wordBreak("applepenapple", Arrays.asList("apple", "pen")));
+        System.out.println(wordBreak("catsandog", Arrays.asList("cats", "dog", "sand", "and", "cat")));
+        System.out.println(wordBreak("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab", Arrays.asList(
+                "a", "aa", "aaa", "aaaa", "aaaaa", "aaaaaa", "aaaaaaa", "aaaaaaaa", "aaaaaaaaa", "aaaaaaaaaa")));
+
+        System.out.println();
+
+        System.out.println(wordBreak2("leetcode", Arrays.asList("leet", "code")));
+        System.out.println(wordBreak2("applepenapple", Arrays.asList("apple", "pen")));
+        System.out.println(wordBreak2("catsandog", Arrays.asList("cats", "dog", "sand", "and", "cat")));
+        System.out.println(wordBreak2("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab", Arrays.asList(
+                "a", "aa", "aaa", "aaaa", "aaaaa", "aaaaaa", "aaaaaaa", "aaaaaaaa", "aaaaaaaaa", "aaaaaaaaaa")));
+    }
+
+    public boolean wordBreak(String s, List<String> wordDict) {
+        int n = s.length();
+        Set<String> set = new HashSet<>(wordDict);
+        boolean[] dp = new boolean[n + 1];
+        dp[0] = true;
+
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (dp[j] && set.contains(s.substring(j, i))) {
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+
+        return dp[n];
+    }
+
+    public boolean wordBreak2(String s, List<String> wordDict) {
+        return dfsForWordBreak(s, wordDict, new HashMap<>());
+    }
+
+    private boolean dfsForWordBreak(String s, List<String> wordDict, Map<String, Boolean> memory) {
+        if (s.isEmpty()) {
+            return true;
+        }
+
+        if (memory.containsKey(s)) {
+            return memory.get(s);
+        }
+
+        boolean result = false;
+        for (String word : wordDict) {
+            if (s.startsWith(word)) {
+                String subString = s.substring(word.length());
+                result = result || wordBreak(subString, wordDict);
+            }
+        }
+
+        memory.put(s, result);
+        return result;
+    }
+
+    @Test
     public void testCoinChange() {
         System.out.println(coinChange(new int[] { 1, 2, 5 }, 11));
         System.out.println(coinChange(new int[] { 2 }, 3));
