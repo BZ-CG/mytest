@@ -36,6 +36,59 @@ import java.util.stream.Stream;
 public class LeetCodeTest {
 
     @Test
+    public void testMaxProduct() {
+        System.out.println(maxProduct(new int[] { 2, 3, -2, 4 }));
+        System.out.println(maxProduct(new int[] { -2, 0, -1 }));
+        System.out.println(maxProduct(new int[] { -2, 3, -4 }));
+        System.out.println(maxProduct(new int[] { -1, -2, -9, -6 }));
+        System.out.println(maxProduct(new int[] { 0, 10, 10, 10, 10, 10, 10, 10, 10, 10, -10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 0 }));
+    }
+
+    public int maxProduct(int[] nums) {
+        int n = nums.length;
+        double max = nums[0];
+        double[] maxArr = new double[n];
+        double[] minArr = new double[n];
+        maxArr[0] = nums[0];
+        minArr[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            maxArr[i] = nums[i];
+            minArr[i] = nums[i];
+
+            maxArr[i] = Math.max(maxArr[i - 1] * nums[i], Math.max(minArr[i - 1] * nums[i], nums[i]));
+            minArr[i] = Math.min(minArr[i - 1] * nums[i], Math.min(maxArr[i - 1] * nums[i], nums[i]));
+            max = Math.max(max, maxArr[i]);
+        }
+
+        return (int) max;
+    }
+
+    @Test
+    public void testLengthOfLIS() {
+        System.out.println(lengthOfLIS(new int[] { 10, 9, 2, 5, 3, 7, 101, 18 }));
+        System.out.println(lengthOfLIS(new int[] { 0, 1, 0, 3, 2, 3 }));
+        System.out.println(lengthOfLIS(new int[] { 7, 7, 7, 7, 7, 7, 7 }));
+    }
+
+    public int lengthOfLIS(int[] nums) {
+        int n = nums.length;
+        int max = 1;
+        int[] dp = new int[n];
+        dp[0] = 1;
+        for (int i = 1; i < n; i++) {
+            dp[i] = 1;
+            for (int j = 0; j < i; j++) {
+                if (nums[i] > nums[j]) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+            max = Math.max(max, dp[i]);
+        }
+
+        return max;
+    }
+
+    @Test
     public void testWordBreak() {
         System.out.println(wordBreak("leetcode", Arrays.asList("leet", "code")));
         System.out.println(wordBreak("applepenapple", Arrays.asList("apple", "pen")));
