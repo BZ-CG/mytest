@@ -36,6 +36,188 @@ import java.util.stream.Stream;
 public class LeetCodeTest {
 
     @Test
+    public void testLongestPalindrome() {
+        System.out.println(longestPalindrome("babad"));
+        System.out.println(longestPalindrome("cbbd"));
+        System.out.println(longestPalindrome("cbbdaad"));
+    }
+
+    public String longestPalindrome(String s) {
+        char[] chars = s.toCharArray();
+        int length = chars.length;
+        boolean[][] dp = new boolean[length][length];
+
+        int max = 0, begin = 0;
+        for (int i = length - 1; i >= 0; i--) {
+            for (int j = i; j < length; j++) {
+                if (chars[i] == chars[j]) {
+                    if (j - i < 2) {
+                        dp[i][j] = true;
+                    } else if (dp[i + 1][j - 1]) {
+                        dp[i][j] = true;
+                    }
+                }
+
+                if (dp[i][j] && j - i + 1 > max) {
+                    max = j - i + 1;
+                    begin = i;
+                }
+            }
+        }
+
+        return s.substring(begin, begin + max);
+    }
+
+    @Test
+    public void testMinPathSum() {
+        System.out.println(minPathSum(new int[][] { { 1, 3, 1 }, { 1, 5, 1 }, { 4, 2, 1 } }));
+        System.out.println(minPathSum(new int[][] { { 1, 2, 3 }, { 4, 5, 6 } }));
+    }
+
+    public int minPathSum(int[][] grid) {
+        int m = grid.length;
+        int n = grid[0].length;
+        int[][] dp = new int[m][n];
+        dp[0][0] = grid[0][0];
+
+        for (int i = 1; i < m; i++) {
+            dp[i][0] = grid[i][0] + dp[i - 1][0];
+        }
+        for (int i = 1; i < n; i++) {
+            dp[0][i] = grid[0][i] + dp[0][i - 1];
+        }
+
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                dp[i][j] = Math.min(dp[i - 1][j], dp[i][j - 1]) + grid[i][j];
+            }
+        }
+
+        return dp[m - 1][n - 1];
+
+    }
+
+    @Test
+    public void testUniquePaths2() {
+        System.out.println(uniquePaths2(3, 2));
+        System.out.println(uniquePaths2(3, 7));
+        System.out.println(uniquePaths2(3, 3));
+    }
+
+    public int uniquePaths2(int m, int n) {
+        int[][] dp = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            dp[i][0] = 1;
+        }
+        for (int i = 0; i < n; i++) {
+            dp[0][i] = 1;
+        }
+
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+            }
+        }
+
+        return dp[m - 1][n - 1];
+    }
+
+    @Test
+    public void testLongestValidParentheses() {
+        System.out.println(longestValidParentheses(")()())"));
+        System.out.println(longestValidParentheses("(()"));
+        System.out.println(longestValidParentheses("()(()"));
+
+        // ()(()
+
+    }
+
+    public int longestValidParentheses(String s) {
+        if (s == null || s.isEmpty()) {
+            return 0;
+        }
+
+        int n = s.length();
+        int[] flag = new int[n];
+        Stack<Integer> stack = new Stack<>();
+        for (int i = 0; i < s.toCharArray().length; i++) {
+            char c = s.toCharArray()[i];
+            if (c == '(') {
+                stack.push(i);
+            } else {
+                if (!stack.isEmpty()) {
+                    Integer index = stack.pop();
+                    flag[index] = 1;
+                    flag[i] = 1;
+                }
+            }
+        }
+
+        int max = 0, count = 0;
+        for (int value : flag) {
+            if (value != 1) {
+                count = 0;
+            } else {
+                count++;
+            }
+
+            max = Math.max(max, count);
+        }
+
+        return max;
+    }
+
+    @Test
+    public void testCanPartition() {
+        System.out.println(canPartition(new int[] { 1, 5, 11, 5 }));
+        System.out.println(canPartition(new int[] { 1, 2, 3, 5 }));
+    }
+
+    public boolean canPartition(int[] nums) {
+        int n = nums.length;
+        if (n < 2) {
+            return false;
+        }
+
+        int sum = 0;
+        int maxNum = 0;
+        for (int num : nums) {
+            sum += num;
+            if (num > maxNum) {
+                maxNum = num;
+            }
+        }
+
+        if ((sum & 1) == 1) {
+            return false;
+        }
+
+        int target = sum / 2;
+        if (maxNum > target) {
+            return false;
+        }
+
+        boolean[][] dp = new boolean[n][target + 1];
+        for (int i = 0; i < n; i++) {
+            dp[i][0] = true;
+        }
+
+        dp[0][nums[0]] = true;
+        for (int i = 1; i < n; i++) {
+            int num = nums[i];
+            for (int j = 1; j <= target; j++) {
+                if (j >= num) {
+                    dp[i][j] = dp[i - 1][j] | dp[i - 1][j - num];
+                } else {
+                    dp[i][j] = dp[i - 1][j];
+                }
+            }
+        }
+
+        return dp[n - 1][target];
+    }
+
+    @Test
     public void testMaxProduct() {
         System.out.println(maxProduct(new int[] { 2, 3, -2, 4 }));
         System.out.println(maxProduct(new int[] { -2, 0, -1 }));
