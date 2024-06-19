@@ -36,6 +36,69 @@ import java.util.stream.Stream;
 public class LeetCodeTest {
 
     @Test
+    public void testMinDistance() {
+        System.out.println(minDistance("horse", "ros"));
+        System.out.println(minDistance("intention", "execution"));
+    }
+
+    public int minDistance(String word1, String word2) {
+        char[] chars1 = word1.toCharArray();
+        char[] chars2 = word2.toCharArray();
+
+        int m = chars1.length;
+        int n = chars2.length;
+        int[][] dp = new int[m + 1][n + 1];
+
+        for (int i = 1; i <= m; i++) {
+            dp[i][0] = i;
+        }
+        for (int j = 1; j <= n; j++) {
+            dp[0][j] = j;
+        }
+
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (chars1[i - 1] == chars2[j - 1]) {
+                    dp[i][j] = dp[i - 1][j - 1];
+                } else {
+                    dp[i][j] = Math.min(Math.min(dp[i - 1][j - 1], dp[i - 1][j]), dp[i][j - 1]) + 1;
+                }
+            }
+        }
+
+        return dp[m][n];
+    }
+
+    @Test
+    public void testLongestCommonSubsequence() {
+
+        System.out.println(longestCommonSubsequence("abcde", "ace"));
+        System.out.println(longestCommonSubsequence("abc", "abc"));
+        System.out.println(longestCommonSubsequence("abc", "def"));
+
+    }
+
+    public int longestCommonSubsequence(String text1, String text2) {
+        char[] chars1 = text1.toCharArray();
+        char[] chars2 = text2.toCharArray();
+
+        int m = chars1.length, n = chars2.length;
+        int[][] dp = new int[m + 1][n + 1];
+
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (chars1[i - 1] != chars2[j - 1]) {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                } else {
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                }
+            }
+        }
+
+        return dp[m][n];
+    }
+
+    @Test
     public void testLongestPalindrome() {
         System.out.println(longestPalindrome("babad"));
         System.out.println(longestPalindrome("cbbd"));
