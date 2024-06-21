@@ -36,6 +36,109 @@ import java.util.stream.Stream;
 public class LeetCodeTest {
 
     @Test
+    public void testSortColors() {
+        sortColors(new int[] { 0, 1, 2, 2, 1, 0 });
+        sortColors(new int[] { 2, 0, 2, 1, 1, 0 });
+        System.out.println();
+        sortColors2(new int[] { 0, 1, 2, 2, 1, 0 });
+        sortColors2(new int[] { 2, 0, 2, 1, 1, 0 });
+        sortColors2(new int[] { 2, 0, 2, 1, 0, 1 });
+    }
+
+    public void sortColors2(int[] nums) {
+        int left = 0, right = nums.length - 1, temp = 0;
+        for (int i = 0; i < nums.length; i++) {
+            while (i <= right && nums[i] == 2) {
+                temp = nums[right];
+                nums[right] = nums[i];
+                nums[i] = temp;
+                right--;
+            }
+
+            if (nums[i] == 0) {
+                temp = nums[left];
+                nums[left] = nums[i];
+                nums[i] = temp;
+                left++;
+            }
+        }
+
+        ResultUtils.printArr(nums);
+    }
+
+    public void sortColors(int[] nums) {
+        for (int i = 0; i < nums.length; i++) {
+            for (int j = 0; j < nums.length - 1 - i; j++) {
+                if (nums[j] > nums[j + 1]) {
+                    int temp = nums[j + 1];
+                    nums[j + 1] = nums[j];
+                    nums[j] = temp;
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testMajorityElement() {
+        System.out.println(majorityElement(new int[] { 3, 2, 3 }));
+        System.out.println(majorityElement(new int[] { 2, 2, 1, 1, 1, 2, 2 }));
+        System.out.println(majorityElement(new int[] { 4, 5, 4 }));
+
+        System.out.println(majorityElement2(new int[] { 3, 2, 3 }));
+        System.out.println(majorityElement2(new int[] { 2, 2, 1, 1, 1, 2, 2 }));
+        System.out.println(majorityElement2(new int[] { 4, 5, 4 }));
+
+    }
+
+    public int majorityElement(int[] nums) {
+        int n = nums.length;
+        Map<Integer, Integer> map = new HashMap<>(n);
+        for (int num : nums) {
+            map.put(num, map.getOrDefault(num, 0) + 1);
+        }
+
+        int max = 0, result = 0;
+        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+            if (entry.getValue() > max) {
+                max = entry.getValue();
+                result = entry.getKey();
+            }
+        }
+
+        return result;
+    }
+
+    public int majorityElement2(int[] nums) {
+        int count = 0;
+        Integer result = null;
+        for (int num : nums) {
+            if (count == 0) {
+                result = num;
+            }
+
+            count += (num == result) ? 1 : -1;
+        }
+
+        return result;
+    }
+
+    @Test
+    public void testSingleNumber() {
+        System.out.println(singleNumber(new int[] { 2, 2, 1 }));
+        System.out.println(singleNumber(new int[] { 4, 1, 2, 1, 2 }));
+        System.out.println(singleNumber(new int[] { 1 }));
+    }
+
+    public int singleNumber(int[] nums) {
+        int singNumber = 0;
+        for (int num : nums) {
+            singNumber ^= num;
+        }
+
+        return singNumber;
+    }
+
+    @Test
     public void testMinDistance() {
         System.out.println(minDistance("horse", "ros"));
         System.out.println(minDistance("intention", "execution"));
