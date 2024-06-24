@@ -40,6 +40,7 @@ public class LeetCodeTest {
         System.out.println(findDuplicate(new int[] { 1, 3, 4, 2, 2 }));
         System.out.println(findDuplicate(new int[] { 3, 1, 3, 4, 2 }));
         System.out.println(findDuplicate(new int[] { 3, 3, 3, 3, 3 }));
+        System.out.println(findDuplicate(new int[] { 3, 3, 3, 3, 3 }));
 
     }
 
