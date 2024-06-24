@@ -43,7 +43,6 @@ public class LeetCodeTest {
 
     }
 
-    // 一二三四五
     public int findDuplicate(int[] nums) {
         int slow = 0, fast = 0;
         slow = nums[slow];
